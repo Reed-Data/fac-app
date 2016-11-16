@@ -61,12 +61,16 @@ shinyServer(
       start_year <- input$range_yrs[1]
       end_year <- input$range_yrs[2]
       if(input$HUM & input$y_var == "Thesis Load/FTE"){
+        #start_year <- 2007
+        #end_year <- 2014
+        #input$depts
         tl_plot <- thes_dept %>% 
           filter(year >= start_year, year <= end_year) %>%
           inner_join(yt_small, by = c("year" = "ThesisYear")) %>% 
           inner_join(total_FTE, 
             by = c("Department" = "DepartmentLong", "SchoolYear")) %>%
           mutate(thes_load_perFTE = advisees / FTE) %>% 
+          filter(Department.y %in% input$depts) %>%
           ggplot(aes(x = year, y = thes_load_perFTE)) +
           geom_line(aes(color = Department.y))
         ggplotly(tl_plot)

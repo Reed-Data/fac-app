@@ -15,11 +15,6 @@ shinyUI(fluidPage(
         sep = ""
       ),
       
-#      checkboxGroupInput("depts", "Departments to include:",
-#        unique(d$Department),
-#        selected = unique(d$Department)
-#        ),
-      
       # conditionalPanel(
       #  condition = "input.depts %in% dist_d$Department",
       #   selectInput("smoothMethod", "Method",
@@ -30,7 +25,12 @@ shinyUI(fluidPage(
                          selected = unique(d$courseid)
       ),
       br(),
-      checkboxInput("HUM", "Include HUM in total?", value = TRUE)
+      checkboxInput("HUM", "Include HUM in total?", value = TRUE),
+      br(),
+      checkboxGroupInput("depts", "Departments to include:",
+        unique(total_FTE$Department),
+        selected = c("Biology", "Chemistry", "Mathematics", "Physics", "Psychology")
+      )
     ),
     mainPanel(
       tabsetPanel(
@@ -39,6 +39,8 @@ shinyUI(fluidPage(
             choices = c("Thesis Load/FTE", "# Student Units / FTE", "Exposure / FTE"),
             selected = "Thesis Load/FTE"),
           plotlyOutput("equity_plot")),
+        tabPanel("Panel",
+          plotlyOutput("scatter")),
         tabPanel("Intro Sci", 
           br(),
           p("Enrollment by Department"),
