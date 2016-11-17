@@ -2,27 +2,153 @@ library(shiny)
 library(tidyverse)
 library(stringr)
 library(plotly)
+library(ggthemes)
+library(ggrepel)
 
 shinyServer(
   
   function(input, output, session){
     
-    output$intro_sci_plot <- renderPlotly({
+    # First tab
+    output$thesload_plot <- renderPlotly({
       start_year <- input$range_yrs[1]
       end_year <- input$range_yrs[2]
+      if(input$HUM){# & input$y_var == "Thesis Load/FTE"){
+        #start_year <- 2007
+        #end_year <- 2014
+        tl_plot <- joined_total %>% 
+          filter(year >= start_year, year <= end_year) %>%
+          filter(Department %in% input$depts) %>%
+          rename("Thesis Load per FTE" = thes_load_perFTE) %>%
+          rename("Year" = year) %>%          
+          ggplot(aes(x = Year, y = `Thesis Load per FTE`)) +
+          geom_line(aes(color = Department)) +
+          theme(legend.title = element_blank()) +
+          theme_minimal()
+        ggplotly(tl_plot)
+      }
+      else {#if(!input$HUM)# & input$y_var == "Thesis Load/FTE"){
+        tl_plot <- joined_noHUM %>% 
+          filter(year >= start_year, year <= end_year) %>%
+          filter(Department %in% input$depts) %>%
+          rename("Thesis Load per FTE" = thes_load_perFTE) %>%
+          rename("Year" = year) %>%          
+          ggplot(aes(x = Year, y = `Thesis Load per FTE`)) +
+          geom_line(aes(color = Department)) +
+          theme(legend.title = element_blank()) +
+          theme_minimal()
+        ggplotly(tl_plot)
+      }
+    })
+    
+    
+    output$units_plot <- renderPlotly({
+      start_year <- input$range_yrs[1]
+      end_year <- input$range_yrs[2]
+      if(input$HUM){
+        uf_plot <- joined_total_units %>% 
+          filter(year >= start_year, year <= end_year) %>%
+          filter(Department %in% input$depts) %>%
+          rename("Total Units per FTE" = Units_perFTE) %>%
+          rename("Year" = year) %>%          
+          ggplot(aes(x = Year, y = `Total Units per FTE`)) +
+          geom_line(aes(color = Department)) +
+          theme(legend.title = element_blank()) +
+          theme_minimal()
+        ggplotly(uf_plot)
+      }
+      else { #if(!input$HUM)# & input$y_var == "Thesis Load/FTE"){
+        uf_plot <- joined_noHUM_units %>% 
+          filter(year >= start_year, year <= end_year) %>%
+          filter(Department %in% input$depts) %>%
+          rename("Total Units per FTE" = Units_perFTE) %>%
+          rename("Year" = year) %>%          
+          ggplot(aes(x = Year, y = `Total Units per FTE`)) +
+          geom_line(aes(color = Department)) +
+          theme(legend.title = element_blank()) +
+          theme_minimal()
+        ggplotly(uf_plot)
+      }
+    })
+    
+    # Second tab
+    output$scatter <- renderPlot({
+      start_year <- input$range_yrs2[1]
+      end_year <- input$range_yrs2[2]
+      if(input$center == "Mean" & input$HUM2){
+        join_for_scatter %>% 
+          filter(year >= start_year, year <= end_year) %>%        
+          group_by(Department, Division) %>% 
+          summarize(
+            `Mean Thesis Load per FTE` = mean(thes_load_perFTE),
+            `Mean Student Units per FTE` = mean(Units_perFTE)
+          ) %>%
+          ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
+          geom_point(aes(color = Division))  +
+          geom_text_repel(aes(label = Department)) +
+          theme_minimal()
+      }
+      else if(input$center == "Median" & input$HUM2){
+        join_for_scatter %>% 
+          filter(year >= start_year, year <= end_year) %>%        
+          group_by(Department, Division) %>% 
+          summarize(
+            `Median Thesis Load per FTE` = median(thes_load_perFTE),
+            `Median Student Units per FTE` = median(Units_perFTE)
+          ) %>%
+          ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
+          geom_point(aes(color = Division))  +
+          geom_text_repel(aes(label = Department)) +
+          theme_minimal()
+      }
+      else if(input$center == "Mean" & !input$HUM2){
+        join_for_scatter_noHUM %>% 
+          filter(year >= start_year, year <= end_year) %>%        
+          group_by(Department, Division) %>% 
+          summarize(
+            `Mean Thesis Load per FTE` = mean(thes_load_perFTE),
+            `Mean Student Units per FTE` = mean(Units_perFTE)
+          ) %>%
+          ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
+          geom_point(aes(color = Division))  +
+          geom_text_repel(aes(label = Department)) +
+          theme_minimal()
+      }
+      else {
+        join_for_scatter_noHUM %>% 
+          filter(year >= start_year, year <= end_year) %>%        
+          group_by(Department, Division) %>% 
+          summarize(
+            `Median Thesis Load per FTE` = median(thes_load_perFTE),
+            `Median Student Units per FTE` = median(Units_perFTE)
+          ) %>%
+          ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
+          geom_point(aes(color = Division))  +
+          geom_text_repel(aes(label = Department)) +
+          theme_minimal()
+      }
+    })
+    
+    # Third tab
+    
+    output$intro_sci_plot <- renderPlotly({
+      start_year <- input$range_yrs3[1]
+      end_year <- input$range_yrs3[2]
       intro_sci <- d %>%
         filter(year >= start_year, year <= end_year) %>%
         group_by(Subj) %>%
         filter(courseid %in% input$courses) %>%
         summarize(interest_enr = sum(Census_enrlment)) %>%
         ggplot(aes(Subj, interest_enr)) +
-        geom_bar(stat = "identity")
+        geom_bar(stat = "identity")  +
+        ggtitle("Interest + Enrollment by Subject") +
+        theme_minimal()
       ggplotly(intro_sci)
     })
     
     output$byFTE <- renderPlotly({
-      start_year <- input$range_yrs[1]
-      end_year <- input$range_yrs[2]
+      start_year <- input$range_yrs3[1]
+      end_year <- input$range_yrs3[2]
       if(input$HUM){
         FTE1 <- d %>%
           filter(year >= start_year, year <= end_year) %>%
@@ -34,9 +160,14 @@ shinyServer(
           summarize(interest_enr = sum(interest_enr_by_year),
             interest_FTE = sum(FTE)) %>% 
           mutate(perFTE = interest_enr / interest_FTE) %>% 
-          ggplot(aes(fct_rev(Department), perFTE)) +
+          rename("Interest + Enrollment" = perFTE) %>% 
+          mutate(Department = fct_rev(Department)) %>% 
+          ggplot(aes(Department, `Interest + Enrollment`)) +
           geom_bar(stat = "identity") +
-          coord_flip()
+          ggtitle("(Interest + Enrollment)/FTE by Department") +
+          #     xlab("Department") +
+          coord_flip()  +
+          theme_minimal()
         ggplotly(FTE1)
       }
       else{
@@ -54,31 +185,6 @@ shinyServer(
           geom_bar(stat = "identity") +
           coord_flip()
         ggplotly(FTE2)
-      }
-    })
-    
-    output$equity_plot <- renderPlotly({
-      start_year <- input$range_yrs[1]
-      end_year <- input$range_yrs[2]
-      if(input$HUM & input$y_var == "Thesis Load/FTE"){
-        #start_year <- 2007
-        #end_year <- 2014
-        #input$depts
-        tl_plot <- thes_dept %>% 
-          filter(year >= start_year, year <= end_year) %>%
-          inner_join(yt_small, by = c("year" = "ThesisYear")) %>% 
-          inner_join(total_FTE, 
-            by = c("Department" = "DepartmentLong", "SchoolYear")) %>%
-          mutate(thes_load_perFTE = advisees / FTE) %>% 
-          filter(Department.y %in% input$depts) %>%
-          ggplot(aes(x = year, y = thes_load_perFTE)) +
-          geom_line(aes(color = Department.y))
-        ggplotly(tl_plot)
-      }
-      else{
-        # Placeholder
-       ggplotly(iris %>% ggplot(aes(x = Sepal.Length, y = Sepal.Width)) +
-          geom_point(aes(color = Species)))
       }
     })
     

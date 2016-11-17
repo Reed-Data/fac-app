@@ -5,6 +5,7 @@ library(stringr)
 library(forcats)
 library(plotly)
 
+divisions <- read_csv("divisions.csv")
 yt <- read_csv("year_table.csv")
 dl <- read_csv("dept_lookup.csv")
 yt_small <- yt %>% distinct(SchoolYear, ThesisYear)
@@ -45,13 +46,63 @@ write_rds(x = thes_fac, path = "thes_fac.RDS")
 ## total_FTE = HUM_FTE + DEPT_FTE
 total_FTE <- read_excel("FTE.xlsx", sheet = 1) %>% 
   gather(key = "SchoolYear", value = "FTE", -Department) %>% 
+  mutate(Department = str_replace(Department, pattern = "Art/Art History", replacement = "Art")) %>% 
+  mutate(Department = str_replace(Department, 
+    pattern = "English/Creative Writing", replacement = "English")) %>% 
   mutate(DepartmentLong = paste(Department, "Department"))
 total_Units <- read_excel("FTE.xlsx", sheet = 2) %>% 
   gather(key = "SchoolYear", value = "Units", -Department) %>% 
+  mutate(Department = str_replace(Department, pattern = "Art/Art History", replacement = "Art")) %>% 
+  mutate(Department = str_replace(Department, 
+    pattern = "English/Creative Writing", replacement = "English")) %>% 
   mutate(DepartmentLong = paste(Department, "Department"))
 HUM_FTE <- read_excel("FTE.xlsx", sheet = 3) %>% 
   gather(key = "SchoolYear", value = "FTE", -Department) %>% 
+  mutate(Department = str_replace(Department, pattern = "Art/Art History", replacement = "Art")) %>% 
+  mutate(Department = str_replace(Department, 
+    pattern = "English/Creative Writing", replacement = "English")) %>% 
   mutate(DepartmentLong = paste(Department, "Department"))
 DEPT_FTE <- read_excel("FTE.xlsx", sheet = 4) %>% 
   gather(key = "SchoolYear", value = "FTE", -Department) %>% 
+  mutate(Department = str_replace(Department, pattern = "Art/Art History", replacement = "Art")) %>% 
+  mutate(Department = str_replace(Department, 
+    pattern = "English/Creative Writing", replacement = "English")) %>% 
   mutate(DepartmentLong = paste(Department, "Department"))
+
+joined_total <- thes_dept %>% 
+  inner_join(yt_small, by = c("year" = "ThesisYear")) %>% 
+  inner_join(total_FTE, 
+    by = c("Department" = "DepartmentLong", "SchoolYear")) %>%
+  mutate(thes_load_perFTE = advisees / FTE) %>% 
+  rename("DepartmentLong" = Department,
+    "Department" = Department.y)
+
+joined_noHUM <- thes_dept %>% 
+  inner_join(yt_small, by = c("year" = "ThesisYear")) %>% 
+  inner_join(DEPT_FTE, 
+    by = c("Department" = "DepartmentLong", "SchoolYear")) %>%
+  mutate(thes_load_perFTE = advisees / FTE) %>% 
+  rename("DepartmentLong" = Department,
+    "Department" = Department.y)
+
+joined_total_units <- total_Units %>% 
+  inner_join(yt_small, by = "SchoolYear") %>% 
+  inner_join(total_FTE, 
+    by = c("Department", "SchoolYear", "DepartmentLong")) %>%
+  mutate(Units_perFTE = Units / FTE) %>% 
+  rename("year" = ThesisYear)
+
+joined_noHUM_units <- total_Units %>% 
+  inner_join(yt_small, by = "SchoolYear") %>% 
+  inner_join(DEPT_FTE, 
+    by = c("Department", "SchoolYear", "DepartmentLong")) %>%
+  mutate(Units_perFTE = Units / FTE) %>% 
+  rename("year" = ThesisYear)
+
+join_for_scatter <- joined_total %>%
+  inner_join(joined_total_units, by = c("DepartmentLong", "Department", "SchoolYear", "year", "FTE")) %>% 
+  inner_join(divisions, by = "Department")
+
+join_for_scatter_noHUM <- joined_noHUM %>%
+  inner_join(joined_noHUM_units, by = c("DepartmentLong", "Department", "SchoolYear", "year", "FTE")) %>% 
+  inner_join(divisions, by = "Department")

@@ -1,56 +1,99 @@
 library(shiny)
+library(shinythemes)
 
-shinyUI(fluidPage(
+shinyUI(navbarPage("Reed College Faculty Load",
+  theme = shinytheme("paper"),
+  # https://gallery.shinyapps.io/117-shinythemes/
   
-  # Application title
-  headerPanel("Reed College Faculty Load Shiny App"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("range_yrs",
-                  "Time span:",
-                  min = 2007,
-                  max = 2015,
-                  value = c(2012, 2015),
-        sep = ""
+  tabPanel("Equity",
+    sidebarLayout(
+      sidebarPanel(
+        sliderInput(inputId = "range_yrs",
+          label = "Time span:",
+          min = 2007,
+          max = 2015,
+          value = c(2012, 2015),
+          sep = ""),
+        hr(),
+        checkboxInput("HUM", "Include HUM in total?", value = TRUE),
+        checkboxInput("comb_lang", "Combine Languages?", value = FALSE),
+        hr(),
+        p("Departments to include:"),
+        tags$head(
+          # http://www.w3schools.com/cssref/css3_pr_column-count.asp
+          tags$style(HTML("
+            .multicol {
+              -webkit-column-count: 2; /* Chrome, Safari, Opera */
+              -moz-column-count: 2; /* Firefox */
+              column-count: 2;
+
+              -webkit-column-gap: 2px; /* Chrome, Safari, Opera */
+              -moz-column-gap: 2px; /* Firefox */
+              column-gap: 2px;
+            }
+            "))
+          ),
+        tags$div(class = "multicol",
+          checkboxGroupInput("depts", NULL,
+            unique(joined_total$Department),
+            selected = c("Biology", "Chemistry", "Mathematics", "Physics", "Psychology")
+          )
+        )
       ),
-      
-      # conditionalPanel(
-      #  condition = "input.depts %in% dist_d$Department",
-      #   selectInput("smoothMethod", "Method",
-      #     list("lm", "glm", "gam", "loess", "rlm"))
-      # )
-      checkboxGroupInput("courses", "Courses to include:", 
-                         unique(d$courseid),
-                         selected = unique(d$courseid)
-      ),
-      br(),
-      checkboxInput("HUM", "Include HUM in total?", value = TRUE),
-      br(),
-      checkboxGroupInput("depts", "Departments to include:",
-        unique(total_FTE$Department),
-        selected = c("Biology", "Chemistry", "Mathematics", "Physics", "Psychology")
-      )
-    ),
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Equity", 
-          selectizeInput("y_var", "Variable to plot", 
-            choices = c("Thesis Load/FTE", "# Student Units / FTE", "Exposure / FTE"),
-            selected = "Thesis Load/FTE"),
-          plotlyOutput("equity_plot")),
-        tabPanel("Panel",
-          plotlyOutput("scatter")),
-        tabPanel("Intro Sci", 
-          br(),
-          p("Enrollment by Department"),
-          plotlyOutput("intro_sci_plot"),
-          br(),
-          p("Enrollment/FTE by Department"),
-          plotlyOutput("byFTE"))
+      mainPanel(
+        plotlyOutput("thesload_plot"),
+        hr(),
+        plotlyOutput("units_plot")
       )
     )
+  ),
+  
+  tabPanel("Scatterplot",
+    sidebarLayout(
+      sidebarPanel(
+        sliderInput(inputId = "range_yrs2",
+          label = "Time span:",
+          min = 2007,
+          max = 2015,
+          value = c(2012, 2015),
+          sep = ""),
+        hr(),
+        selectizeInput(inputId = "center",
+          label = "Select Mean or Median",
+          choices = c("Mean", "Median"),
+          selected = "Mean"),
+        checkboxInput("HUM2", "Include HUM in total?", value = TRUE)
+        ),
+    mainPanel(
+      br(),
+      plotOutput("scatter"))
+      )
+  ),
+  
+  tabPanel("Intro Sci",
+    
+    sidebarLayout(
+      sidebarPanel(
+        sliderInput(inputId = "range_yrs3",
+          label = "Time span:",
+          min = 2007,
+          max = 2015,
+          value = c(2012, 2015),
+          sep = ""),
+        hr(),
+        checkboxGroupInput("courses", "Courses to include:", 
+          unique(d$courseid),
+          selected = unique(d$courseid)
+        )
+      ),
+      
+      mainPanel(
+        br(),
+        plotlyOutput("intro_sci_plot"),
+        hr(),
+        plotlyOutput("byFTE"))
+      
+    )
   )
-
 )
 )
