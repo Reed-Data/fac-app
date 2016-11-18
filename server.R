@@ -84,8 +84,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(aes(color = Division))  +
-          geom_text_repel(aes(label = Department)) +
+          geom_point(size = 3)  +
+          geom_label_repel(aes(label = Department, fill = Division)) +
           theme_minimal()
       }
       else if(input$center == "Median" & input$HUM2){
@@ -97,8 +97,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(aes(color = Division))  +
-          geom_text_repel(aes(label = Department)) +
+          geom_point(size = 3)  +
+          geom_label_repel(aes(label = Department, fill = Division)) +
           theme_minimal()
       }
       else if(input$center == "Mean" & !input$HUM2){
@@ -110,8 +110,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(aes(color = Division))  +
-          geom_text_repel(aes(label = Department)) +
+          geom_point(size = 3)  +
+          geom_label_repel(aes(label = Department, fill = Division)) +
           theme_minimal()
       }
       else {
@@ -123,8 +123,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(aes(color = Division))  +
-          geom_text_repel(aes(label = Department)) +
+          geom_point(size = 3)  +
+          geom_label_repel(aes(label = Department, fill = Division)) +
           theme_minimal()
       }
     })

@@ -1,11 +1,11 @@
 library(shiny)
 library(shinythemes)
 
-shinyUI(navbarPage("Reed College Faculty Load",
+shinyUI(navbarPage("Data Dashboard",
   theme = shinytheme("paper"),
   # https://gallery.shinyapps.io/117-shinythemes/
   
-  tabPanel("Equity",
+  tabPanel("Trends",
     sidebarLayout(
       sidebarPanel(
         sliderInput(inputId = "range_yrs",
@@ -16,7 +16,7 @@ shinyUI(navbarPage("Reed College Faculty Load",
           sep = ""),
         hr(),
         checkboxInput("HUM", "Include HUM in total?", value = TRUE),
-        checkboxInput("comb_lang", "Combine Languages?", value = FALSE),
+   #     checkboxInput("comb_lang", "Combine Languages?", value = FALSE),
         hr(),
         p("Departments to include:"),
         tags$head(
