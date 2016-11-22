@@ -16,19 +16,19 @@ shinyServer(
       if(input$HUM){# & input$y_var == "Thesis Load/FTE"){
         #start_year <- 2007
         #end_year <- 2014
-        tl_plot <- joined_total %>% 
+        joined_total %>% 
           filter(year >= start_year, year <= end_year) %>%
           filter(Department %in% input$depts) %>%
           rename("Thesis Load per FTE" = thes_load_perFTE) %>%
-          rename("Year" = year) %>%          
+          rename("Year" = year) %>% 
           ggplot(aes(x = Year, y = `Thesis Load per FTE`)) +
           geom_line(aes(color = Department)) +
           theme(legend.title = element_blank()) +
+          coord_cartesian(ylim = c(0, 8)) +
           theme_minimal()
-        ggplotly(tl_plot)
       }
       else {#if(!input$HUM)# & input$y_var == "Thesis Load/FTE"){
-        tl_plot <- joined_noHUM %>% 
+        joined_noHUM %>% 
           filter(year >= start_year, year <= end_year) %>%
           filter(Department %in% input$depts) %>%
           rename("Thesis Load per FTE" = thes_load_perFTE) %>%
@@ -36,17 +36,16 @@ shinyServer(
           ggplot(aes(x = Year, y = `Thesis Load per FTE`)) +
           geom_line(aes(color = Department)) +
           theme(legend.title = element_blank()) +
+          coord_cartesian(ylim = c(0, 8)) +
           theme_minimal()
-        ggplotly(tl_plot)
       }
     })
-    
     
     output$units_plot <- renderPlotly({
       start_year <- input$range_yrs[1]
       end_year <- input$range_yrs[2]
       if(input$HUM){
-        uf_plot <- joined_total_units %>% 
+        joined_total_units %>% 
           filter(year >= start_year, year <= end_year) %>%
           filter(Department %in% input$depts) %>%
           rename("Total Units per FTE" = Units_perFTE) %>%
@@ -54,11 +53,11 @@ shinyServer(
           ggplot(aes(x = Year, y = `Total Units per FTE`)) +
           geom_line(aes(color = Department)) +
           theme(legend.title = element_blank()) +
+          coord_cartesian(ylim = c(20, 160)) + 
           theme_minimal()
-        ggplotly(uf_plot)
       }
       else { #if(!input$HUM)# & input$y_var == "Thesis Load/FTE"){
-        uf_plot <- joined_noHUM_units %>% 
+        joined_noHUM_units %>% 
           filter(year >= start_year, year <= end_year) %>%
           filter(Department %in% input$depts) %>%
           rename("Total Units per FTE" = Units_perFTE) %>%
@@ -66,8 +65,8 @@ shinyServer(
           ggplot(aes(x = Year, y = `Total Units per FTE`)) +
           geom_line(aes(color = Department)) +
           theme(legend.title = element_blank()) +
+          coord_cartesian(ylim = c(20, 160)) + 
           theme_minimal()
-        ggplotly(uf_plot)
       }
     })
     
