@@ -5,6 +5,14 @@ library(stringr)
 library(forcats)
 library(plotly)
 
+round_df <- function(data, digits) {
+  nums <- vapply(data, is.numeric, FUN.VALUE = logical(1))
+  
+  data[,nums] <- format(round(data[,nums], digits = digits), nsmall = digits)
+  
+  (data)
+}
+
 divisions <- read_csv("divisions.csv")
 yt <- read_csv("year_table.csv")
 dl <- read_csv("dept_lookup.csv")

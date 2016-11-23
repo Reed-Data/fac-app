@@ -10,9 +10,9 @@ shinyUI(navbarPage("Data Dashboard",
       sidebarPanel(
         sliderInput(inputId = "range_yrs",
           label = "Time span:",
-          min = 2007,
-          max = 2015,
-          value = c(2012, 2015),
+          min = 2008,
+          max = 2016,
+          value = c(2012, 2016),
           sep = ""),
         hr(),
         checkboxInput("HUM", "Include HUM in total?", value = TRUE),
@@ -53,20 +53,24 @@ shinyUI(navbarPage("Data Dashboard",
       sidebarPanel(
         sliderInput(inputId = "range_yrs2",
           label = "Time span:",
-          min = 2007,
-          max = 2015,
-          value = c(2012, 2015),
+          min = 2008,
+          max = 2016,
+          value = c(2012, 2016),
           sep = ""),
         hr(),
         selectizeInput(inputId = "center",
           label = "Select Mean or Median",
           choices = c("Mean", "Median"),
           selected = "Mean"),
-        checkboxInput("HUM2", "Include HUM in total?", value = TRUE)
+        checkboxInput("HUM2", "Include HUM in total?", value = TRUE),
+        checkboxInput("data_view", "View the data table", value = FALSE)
         ),
     mainPanel(
       br(),
-      plotOutput("scatter"))
+      plotOutput("scatter"),
+      hr(),
+      dataTableOutput("scatter_data")
+      )
       )
   ),
   
@@ -76,9 +80,9 @@ shinyUI(navbarPage("Data Dashboard",
       sidebarPanel(
         sliderInput(inputId = "range_yrs3",
           label = "Time span:",
-          min = 2007,
-          max = 2015,
-          value = c(2012, 2015),
+          min = 2008,
+          max = 2016,
+          value = c(2012, 2016),
           sep = ""),
         hr(),
         checkboxGroupInput("courses", "Courses to include:", 

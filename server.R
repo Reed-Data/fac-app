@@ -4,6 +4,7 @@ library(stringr)
 library(plotly)
 library(ggthemes)
 library(ggrepel)
+library(DT)
 
 shinyServer(
   
@@ -84,7 +85,8 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division)) +
+          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
       else if(input$center == "Median" & input$HUM2){
@@ -97,7 +99,8 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division)) +
+          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
       else if(input$center == "Mean" & !input$HUM2){
@@ -110,7 +113,8 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division)) +
+          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
       else {
@@ -123,13 +127,72 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division)) +
+          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
     })
     
-    # Third tab
+    output$scatter_data <- renderDataTable(
+      if(input$center == "Mean" & input$HUM2 & input$data_view){
+        datatable(join_for_scatter %>% 
+            filter(year >= input$range_yrs2[1], year <= input$range_yrs2[2]) %>%
+            group_by(Department, Division) %>%
+            summarize(
+              `Mean Thesis Load per FTE` = mean(thes_load_perFTE),
+              `Mean Student Units per FTE` = mean(Units_perFTE)
+            ) %>% 
+            round_df(digits = 2),
+          rownames = FALSE,
+          options = list(pageLength = nrow(join_for_scatter_noHUM),
+            dom = 'ft')
+        )
+      }
+      else if(input$center == "Median" & input$HUM2 & input$data_view){
+        datatable(join_for_scatter %>%
+            filter(year >= input$range_yrs2[1], year <= input$range_yrs2[2]) %>%
+            group_by(Department, Division) %>%
+            summarize(
+              `Median Thesis Load per FTE` = median(thes_load_perFTE),
+              `Median Student Units per FTE` = median(Units_perFTE)
+            ) %>% 
+            round_df(digits = 2),
+          rownames = FALSE,
+          options = list(pageLength = nrow(join_for_scatter_noHUM),
+            dom = 'ft')
+        )
+      }
+      else if(input$center == "Mean" & !input$HUM2 & input$data_view){
+        datatable(join_for_scatter_noHUM %>%
+            filter(year >= input$range_yrs2[1], year <= input$range_yrs2[2]) %>%
+            group_by(Department, Division) %>%
+            summarize(
+              `Mean Thesis Load per FTE` = mean(thes_load_perFTE),
+              `Mean Student Units per FTE` = mean(Units_perFTE)
+              ) %>% 
+            round_df(digits = 2),
+          rownames = FALSE,
+          options = list(pageLength = nrow(join_for_scatter_noHUM),
+            dom = 'ft')
+        )
+      }
+    else if(input$center == "Median" & !input$HUM2 & input$data_view){
+        datatable(join_for_scatter_noHUM %>%
+            filter(year >= input$range_yrs2[1], year <= input$range_yrs2[2]) %>%
+            group_by(Department, Division) %>%
+            summarize(
+              `Median Thesis Load per FTE` = median(thes_load_perFTE),
+              `Median Student Units per FTE` = median(Units_perFTE)
+            ) %>% 
+            round_df(digits = 2),
+          rownames = FALSE,
+          options = list(pageLength = nrow(join_for_scatter_noHUM),
+            dom = 'ft')
+          )
+      }
+    )
     
+    # Third tab
     output$intro_sci_plot <- renderPlotly({
       start_year <- input$range_yrs3[1]
       end_year <- input$range_yrs3[2]
