@@ -85,7 +85,7 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -99,7 +99,7 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -113,7 +113,7 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -127,13 +127,13 @@ shinyServer(
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
           geom_point(size = 3)  +
-          geom_label_repel(aes(label = Department, fill = Division), label.size = 1) +
+          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
     })
     
-    output$scatter_data <- renderDataTable(
+    output$scatter_data <- DT::renderDataTable(
       if(input$center == "Mean" & input$HUM2 & input$data_view){
         datatable(join_for_scatter %>% 
             filter(year >= input$range_yrs2[1], year <= input$range_yrs2[2]) %>%
@@ -204,6 +204,8 @@ shinyServer(
         ggplot(aes(Subj, interest_enr)) +
         geom_bar(stat = "identity")  +
         ggtitle("Interest + Enrollment by Subject") +
+        xlab("Subject") +
+        ylab("Interest + Enrollment") +
         theme_minimal()
       ggplotly(intro_sci)
     })
@@ -222,12 +224,12 @@ shinyServer(
           summarize(interest_enr = sum(interest_enr_by_year),
             interest_FTE = sum(FTE)) %>% 
           mutate(perFTE = interest_enr / interest_FTE) %>% 
-          rename("Interest + Enrollment" = perFTE) %>% 
+          rename("(Interest + Enrollment) / FTE" = perFTE) %>% 
           mutate(Department = fct_rev(Department)) %>% 
-          ggplot(aes(Department, `Interest + Enrollment`)) +
+          ggplot(aes(Department, `(Interest + Enrollment) / FTE`)) +
           geom_bar(stat = "identity") +
           ggtitle("(Interest + Enrollment)/FTE by Department") +
-          #     xlab("Department") +
+          xlab("") +
           coord_flip()  +
           theme_minimal()
         ggplotly(FTE1)
@@ -245,6 +247,7 @@ shinyServer(
           mutate(perFTE = interest_enr / interest_FTE) %>% 
           ggplot(aes(fct_rev(Department), perFTE)) +
           geom_bar(stat = "identity") +
+          xlab("") +
           coord_flip()
         ggplotly(FTE2)
       }

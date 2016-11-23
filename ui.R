@@ -69,7 +69,7 @@ shinyUI(navbarPage("Data Dashboard",
       br(),
       plotOutput("scatter"),
       hr(),
-      dataTableOutput("scatter_data")
+      DT::dataTableOutput("scatter_data")
       )
       )
   ),
@@ -85,9 +85,11 @@ shinyUI(navbarPage("Data Dashboard",
           value = c(2012, 2016),
           sep = ""),
         hr(),
+        tags$div(class = "multicol",
         checkboxGroupInput("courses", "Courses to include:", 
           unique(d$courseid),
           selected = unique(d$courseid)
+        )
         )
       ),
       
