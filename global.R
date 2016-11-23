@@ -31,7 +31,7 @@ d <- read_delim("data/Schedule-Data-Fall-2007-Fall-2017_20161011_114934.txt", de
     "Spring 2011", "Fall 2011", "Spring 2012", "Fall 2012", "Spring 2013", 
     "Fall 2013", "Spring 2014", "Fall 2014", "Spring 2015", "Fall 2015",
     "Spring 2016", "Fall 2016")))
-write_rds(x = d, path = "d.RDS")
+write_rds(x = d, path = "data/d.RDS")
 
 dist_d <- d %>% distinct(Department, courseid)
 
