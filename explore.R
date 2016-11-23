@@ -1,6 +1,6 @@
 library(readr)
-thes_fac <- read_rds("thes_fac.RDS")
-d <- read_rds("d.RDS")
+thes_fac <- read_rds("data/thes_fac.RDS")
+d <- read_rds("data/d.RDS")
 
 highest_adv_count <- thes_fac %>% group_by(year) %>% 
   top_n(5, wt = advisees) %>% 
