@@ -84,8 +84,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -98,8 +98,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -112,8 +112,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -126,8 +126,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
