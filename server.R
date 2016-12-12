@@ -196,7 +196,7 @@ shinyServer(
     output$intro_sci_plot <- renderPlotly({
       start_year <- input$range_yrs3[1]
       end_year <- input$range_yrs3[2]
-      intro_sci <- d %>%
+      intro_sci <- d %>% 
         filter(year >= start_year, year <= end_year) %>%
         group_by(Subj) %>%
         filter(courseid %in% input$courses) %>%
