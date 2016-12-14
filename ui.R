@@ -1,4 +1,7 @@
 if (!("shiny" %in% names(installed.packages()[,"Package"]))) {install.packages("shiny")}
+library(shiny)
+
+if (!("shinythemes" %in% names(installed.packages()[,"Package"]))) {install.packages("shinythemes")}
 suppressMessages(library(shiny, quietly = TRUE))
 
 if (!("plotly" %in% names(installed.packages()[,"Package"]))) {install.packages("plotly")}
