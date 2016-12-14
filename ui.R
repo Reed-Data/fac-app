@@ -1,5 +1,6 @@
 library(shiny)
-library(shinythemes)
+if (!("shinythemes" %in% names(installed.packages()[,"Package"]))) {install.packages("shinythemes")}
+suppressMessages(library(shiny, quietly = TRUE))
 
 shinyUI(navbarPage("Data Dashboard",
   theme = shinytheme("paper"),
@@ -100,6 +101,8 @@ shinyUI(navbarPage("Data Dashboard",
         plotlyOutput("byFTE"))
       
     )
-  )
+  )#,
+  
+  #tabPanel("Test", plotlyOutput("test"))
 )
 )

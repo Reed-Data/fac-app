@@ -1,10 +1,28 @@
-library(shiny)
-library(tidyverse)
+if (!("tidyverse" %in% names(installed.packages()[,"Package"]))) {install.packages("tidyverse")}
+suppressMessages(library(tidyverse, quietly = TRUE))
+
+library(readxl)
+library(readr)
 library(stringr)
-library(plotly)
-library(ggthemes)
-library(ggrepel)
-library(DT)
+library(forcats)
+
+if (!("plotly" %in% names(installed.packages()[,"Package"]))) {install.packages("plotly")}
+suppressMessages(library(plotly, quietly = TRUE))
+
+if (!("DT" %in% names(installed.packages()[,"Package"]))) {install.packages("DT")}
+suppressMessages(library(DT, quietly = TRUE))
+
+if (!("shiny" %in% names(installed.packages()[,"Package"]))) {install.packages("shiny")}
+suppressMessages(library(shiny, quietly = TRUE))
+
+if (!("ggthemes" %in% names(installed.packages()[,"Package"]))) {install.packages("ggthemes")}
+suppressMessages(library(ggthemes, quietly = TRUE))
+
+if (!("ggrepel" %in% names(installed.packages()[,"Package"]))) {install.packages("ggrepel")}
+suppressMessages(library(ggrepel, quietly = TRUE))
+
+#source("data_prep.R")
+source("file_read.R")
 
 shinyServer(
   
@@ -84,8 +102,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -98,8 +116,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -112,8 +130,8 @@ shinyServer(
             `Mean Student Units per FTE` = mean(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Mean Student Units per FTE`, y = `Mean Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -126,8 +144,8 @@ shinyServer(
             `Median Student Units per FTE` = median(Units_perFTE)
           ) %>%
           ggplot(aes(x = `Median Student Units per FTE`, y = `Median Thesis Load per FTE`)) +
-          geom_point(size = 3)  +
-          geom_label_repel(mapping = aes(label = Department, fill = Division), label.size = 1) +
+          geom_point(size = 2, aes(color = Division))  +
+          geom_text_repel(mapping = aes(label = Department), size = 5) +
           coord_cartesian(xlim = c(35, 135), ylim = c(0, 5)) + 
           theme_minimal()
       }
@@ -196,7 +214,8 @@ shinyServer(
     output$intro_sci_plot <- renderPlotly({
       start_year <- input$range_yrs3[1]
       end_year <- input$range_yrs3[2]
-      intro_sci <- d %>%
+      #intro_sci <- 
+        d %>% 
         filter(year >= start_year, year <= end_year) %>%
         group_by(Subj) %>%
         filter(courseid %in% input$courses) %>%
@@ -207,14 +226,15 @@ shinyServer(
         xlab("Subject") +
         ylab("Interest + Enrollment") +
         theme_minimal()
-      ggplotly(intro_sci)
+      #ggplotly(intro_sci)
     })
     
     output$byFTE <- renderPlotly({
       start_year <- input$range_yrs3[1]
       end_year <- input$range_yrs3[2]
       if(input$HUM){
-        FTE1 <- d %>%
+       # FTE1 <- 
+          d %>%
           filter(year >= start_year, year <= end_year) %>%
           group_by(Department, SchoolYear) %>%
           filter(courseid %in% input$courses) %>%
@@ -232,10 +252,11 @@ shinyServer(
           xlab("") +
           coord_flip()  +
           theme_minimal()
-        ggplotly(FTE1)
+       # ggplotly(FTE1)
       }
       else{
-        FTE2 <- d %>%
+        #FTE2 <- 
+          d %>%
           filter(year >= start_year, year <= end_year) %>%
           group_by(Department, SchoolYear) %>%
           filter(courseid %in% input$courses) %>%
@@ -249,8 +270,12 @@ shinyServer(
           geom_bar(stat = "identity") +
           xlab("") +
           coord_flip()
-        ggplotly(FTE2)
+       # ggplotly(FTE2)
       }
     })
+    
+    output$test <- renderPlotly(
+      qplot(x = Sepal.Length, y = Sepal.Width, data = iris)
+    )
     
   })
