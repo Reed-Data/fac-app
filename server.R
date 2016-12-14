@@ -214,8 +214,14 @@ shinyServer(
     output$intro_sci_plot <- renderPlotly({
       start_year <- input$range_yrs3[1]
       end_year <- input$range_yrs3[2]
+<<<<<<< HEAD
       #intro_sci <- 
         d %>% 
+||||||| merged common ancestors
+      intro_sci <- d %>%
+=======
+      intro_sci <- d %>% 
+>>>>>>> 224692a661e6a6fc1a61cb1393386b2c6edaccff
         filter(year >= start_year, year <= end_year) %>%
         group_by(Subj) %>%
         filter(courseid %in% input$courses) %>%
